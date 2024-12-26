@@ -1,3 +1,3 @@
 export default function Reliability() {
-    return <div>Reliability page!</div>
+  return <div>Reliability page!</div>;
 }

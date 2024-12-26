@@ -1,3 +1,3 @@
 export default function Performance() {
-  return <div>Performace page!</div>
+  return <div>Performace page!</div>;
 }
