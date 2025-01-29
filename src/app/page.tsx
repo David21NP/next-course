@@ -1,7 +1,12 @@
+import Presentation from "components/Presentation";
+import HomePageImg from "public/bg-img.jpg";
+
 export default function Home() {
   return (
-    <>
-      <h1 className="text-2xl">Home Page</h1>
-    </>
+    <Presentation
+      imgData={HomePageImg}
+      alt="Home page img"
+      title="Some long title"
+    />
   );
 }

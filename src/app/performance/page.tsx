@@ -1,3 +1,12 @@
+import Presentation from "components/Presentation";
+import MainImg from "public/performance.jpg";
+
 export default function Performance() {
-  return <div>Performace page!</div>;
+  return (
+    <Presentation
+      imgData={MainImg}
+      alt="Performance img"
+      title="Some long title about performance"
+    />
+  );
 }

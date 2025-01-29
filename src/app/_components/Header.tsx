@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 const routes = [
   { path: "/", label: "Home", icon: "house-fill" },
@@ -10,56 +11,126 @@ const routes = [
   { path: "/scale", label: "Scale", icon: "zoom-in" },
 ];
 
+const linkClassNames = [
+  {
+    true: "rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white",
+    false:
+      "rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white",
+  },
+  {
+    true: "block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white",
+    false:
+      "block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white",
+  },
+];
+
 export default function Header() {
   const pathname = usePathname();
-  const router = useRouter();
+
+  const [openBurgerMenu, setOpenBurgerMenu] = useState(false);
 
   return (
-    <header className="flex gap-2 justify-around">
-      <div className="grid grid-cols-1 sm:hidden">
-        <select
-          aria-label="Select a tab"
-          className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
-          onChange={(ev) => router.push(ev.target.value)}
+    <header className="w-full">
+      <nav className="bg-gray-800">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center">
+              <div className="shrink-0">
+                <img
+                  className="h-8 w-auto"
+                  src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500"
+                  alt="Your Company"
+                />
+              </div>
+              <div className="hidden sm:ml-6 sm:block">
+                <div className="flex space-x-4">
+                  {routes.map(({ path, label }) => (
+                    <Link
+                      key={path}
+                      href={path}
+                      className={linkClassNames[0][`${pathname === path}`]}
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="-mr-2 flex sm:hidden">
+              {/* Mobile menu button */}
+              <button
+                type="button"
+                className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                aria-controls="mobile-menu"
+                aria-expanded="false"
+                onClick={() => setOpenBurgerMenu((old) => !old)}
+              >
+                <span className="absolute -inset-0.5"></span>
+                <span className="sr-only">Open main menu</span>
+                {/*
+                  Icon when menu is closed.
+
+                  Menu open: "hidden", Menu closed: "block"
+                */}
+                <svg
+                  className="block size-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  data-slot="icon"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                  />
+                </svg>
+                {/*
+                  Icon when menu is open.
+
+                  Menu open: "block", Menu closed: "hidden"
+                */}
+                <svg
+                  className="hidden size-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                  data-slot="icon"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 18 18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile menu, show/hide based on menu state */}
+        <div
+          className={openBurgerMenu ? "hidden" : "sm:hidden"}
+          id="mobile-menu"
         >
-          {routes.map(({ path, label }) => (
-            <option key={path} value={path}>
-              {label}
-            </option>
-          ))}
-        </select>
-        <svg
-          className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end fill-gray-500"
-          viewBox="0 0 16 16"
-          fill="currentColor"
-          aria-hidden="true"
-          data-slot="icon"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </div>
-      <div className="hidden sm:block">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-            {routes.map(({ path, label, icon }) => (
+          <div className="space-y-1 px-2 pb-3 pt-2">
+            {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
+            {routes.map(({ path, label }) => (
               <Link
                 key={path}
                 href={path}
-                className={`group inline-flex items-center border-b-2 px-1 py-4 text-sm font-medium gap-2 ${pathname === path ? "border-indigo-500 text-indigo-600 dark:border-indigo-300 dark:text-indigo-400" : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-200 dark:hover:text-gray-300"}`}
+                className={linkClassNames[1][`${pathname === path}`]}
               >
-                <span
-                  className={`bi bi-${icon} text-lg ${pathname === path ? "text-indigo-500 dark:text-indigo-400" : "text-gray-400 group-hover:text-gray-500 dark:text-gray-500 dark:group-hover:text-gray-300"}`}
-                />
-                <span>{label}</span>
+                {label}
               </Link>
             ))}
-          </nav>
+          </div>
         </div>
-      </div>
+      </nav>
     </header>
   );
 }

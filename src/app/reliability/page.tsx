@@ -1,3 +1,12 @@
+import Presentation from "components/Presentation";
+import MainImg from "public/reliability.jpg";
+
 export default function Reliability() {
-  return <div>Reliability page!</div>;
+  return (
+    <Presentation
+      imgData={MainImg}
+      alt="Reliability img"
+      title="Some long title about reliability"
+    />
+  );
 }
