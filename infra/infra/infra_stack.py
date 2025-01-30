@@ -2,8 +2,9 @@ import json
 import os
 
 import aws_cdk.aws_codebuild as codebuild
-from aws_cdk import CfnOutput, SecretValue, Stack
+from aws_cdk import CfnOutput, SecretValue, Stack, aws_amplify
 from aws_cdk import aws_amplify_alpha as amplify
+from aws_cdk import aws_iam as iam
 from aws_cdk import aws_secretsmanager as secretsmanager
 from constructs import Construct
 
@@ -19,8 +20,19 @@ class InfraStack(Stack):
         repository: str,
         github_oauth_token_name: str,
         environment_variables: dict[str, str],
+        github_oidc_arn: str | None = None,
     ) -> None:
         super().__init__(scope, construct_id)
+
+        # if not github_oidc_arn:
+        #     github_oidc = iam.CfnOIDCProvider(
+        #         self,
+        #         "GithubOidc",
+        #         url="https://token.actions.githubusercontent.com",
+        #         client_id_list=["sts.amazonaws.com"],
+        #         thumbprint_list=["6938fd4d98bab03faadb97b34396831e3780aea1"],
+        #     )
+        #     github_oidc_arn = github_oidc.attr_arn
 
         secret_parameters = secretsmanager.Secret(
             self,
@@ -35,7 +47,7 @@ class InfraStack(Stack):
                     }
                 ),
                 generate_string_key="nonce_signing_secret",
-                password_length=32,
+                password_length=30,
             ),
         )
 
@@ -67,9 +79,18 @@ class InfraStack(Stack):
             build_spec=codebuild.BuildSpec.from_object_to_yaml(spec_info),
         )
 
-        secret_parameters.grant_read(amplify_app.grant_principal)
-
         amplify_app.add_branch("master", stage="PRODUCTION")
         # amplify_app.add_branch("develop", stage="DEVELOPMENT")
 
+        amplify_app.node.add_dependency(secret_parameters)
+
+        secret_parameters.grant_read(amplify_app.grant_principal)
+
+        cfn_amplify_app: aws_amplify.CfnApp | None = (
+            amplify_app.node.default_child
+        )  # pyright: ignore[reportAssignmentType]
+        if cfn_amplify_app:
+            cfn_amplify_app.platform = "WEB_COMPUTE"
+
         CfnOutput(self, "AppId", value=amplify_app.app_id)
+        # CfnOutput(self, "GithubOidcArn", value=github_oidc_arn)
