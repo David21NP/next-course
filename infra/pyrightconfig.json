@@ -1,4 +1,5 @@
 {
   "reportAny": false,
   "reportUnusedCallResult": false,
+  "reportUnusedExpression": false
 }
