@@ -1,4 +1,4 @@
-from aws_cdk import CfnOutput, RemovalPolicy
+from aws_cdk import CfnOutput, Duration
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecr as ecr
 from aws_cdk import aws_ecs as ecs
@@ -24,10 +24,11 @@ class EcsFargateConstruct(Construct):
 
     def __init__(
         self,
-        scope: "Construct",
+        scope: Construct,
         id: str,
         *,
         vpc: ec2.IVpc,
+        repository: ecr.Repository,
     ):
         """Init class."""
         super().__init__(scope, id)
@@ -39,15 +40,6 @@ class EcsFargateConstruct(Construct):
             PREFIX + "Cluster",
             vpc=vpc,
             enable_fargate_capacity_providers=True,
-        )
-
-        repository = ecr.Repository(
-            self,
-            PREFIX + "ImageRepository",
-            repository_name=change_case(PREFIX + "ImageRepository"),
-            removal_policy=RemovalPolicy.DESTROY,
-            empty_on_delete=True,
-            image_scan_on_push=True,
         )
 
         # Create a new Fargate Service with ALB
@@ -64,30 +56,26 @@ class EcsFargateConstruct(Construct):
                 ),
                 container_port=3000,
             ),
-            # task_subnets=ec2.SubnetSelection(
-            #     subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS,
-            # ),
-            platform_version=ecs.FargatePlatformVersion.LATEST,
-            public_load_balancer=True,
-            enable_execute_command=True,
-            enable_ecs_managed_tags=True,
+            assign_public_ip=True,
         )
 
-        # Create a new Auto Scaling Policy for the ECS Service
-        scalable_target = fargate_service.service.auto_scale_task_count(
-            max_capacity=2,
+        repository.grant_pull(fargate_service.task_definition.task_role)
+
+        fargate_service.service.connections.security_groups[
+            0
+        ].add_ingress_rule(
+            peer=ec2.Peer.ipv4(vpc.vpc_cidr_block),
+            connection=ec2.Port.tcp(80),
+            description="Allow http inbound from VPC",
         )
 
-        # Create a new Auto Scaling Policy for the ECS Service
-        scalable_target.scale_on_cpu_utilization(
+        # Setup AutoScaling policy
+        scaling = fargate_service.service.auto_scale_task_count(max_capacity=2)
+        scaling.scale_on_cpu_utilization(
             "CpuScaling",
             target_utilization_percent=50,
-        )
-
-        # Create a new Auto Scaling Policy for the ECS Service
-        scalable_target.scale_on_memory_utilization(
-            "MemoryScaling",
-            target_utilization_percent=50,
+            scale_in_cooldown=Duration.seconds(60),
+            scale_out_cooldown=Duration.seconds(60),
         )
 
         CfnOutput(

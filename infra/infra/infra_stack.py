@@ -1,13 +1,7 @@
-import os
-
-from aws_cdk import CfnOutput, Duration, Environment, RemovalPolicy, Stack
+from aws_cdk import CfnOutput, Environment, Stack
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecr as ecr
-from aws_cdk import aws_ecs as ecs
-from aws_cdk import aws_ecs_patterns as ecs_patterns
-from aws_cdk import aws_elasticloadbalancingv2 as elbv2
 from aws_cdk import aws_iam as iam
-from aws_cdk import aws_route53 as route53
 from constructs import Construct
 
 from infra.constructs.ecs_fargate import EcsFargateConstruct
@@ -22,6 +16,7 @@ class InfraStack(Stack):
         *,
         env: Environment | None = None,
         vpc_id: str,
+        repository: ecr.Repository,
         github_oidc_arn: str | None = None,
     ) -> None:
         super().__init__(scope, construct_id, env=env)
@@ -44,4 +39,5 @@ class InfraStack(Stack):
             self,
             "ContainerConstruct",
             vpc=vpc,
+            repository=repository,
         )
