@@ -8,13 +8,16 @@
     "start": "next start",
     "lint": "next lint",
     "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit generate && drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@libsql/client": "^0.14.0",
+    "@monaco-editor/react": "^4.6.0",
     "bootstrap-icons": "^1.11.3",
     "drizzle-orm": "^0.39.1",
+    "monaco-editor": "^0.52.2",
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
