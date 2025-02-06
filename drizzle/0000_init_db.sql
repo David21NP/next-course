@@ -1,9 +1,8 @@
 CREATE TABLE `account` (
-	`id` text PRIMARY KEY NOT NULL,
-	`user_id` text NOT NULL,
+	`userId` text NOT NULL,
 	`type` text NOT NULL,
 	`provider` text NOT NULL,
-	`provider_account_id` text NOT NULL,
+	`providerAccountId` text NOT NULL,
 	`refresh_token` text,
 	`access_token` text,
 	`expires_at` integer,
@@ -11,10 +10,24 @@ CREATE TABLE `account` (
 	`scope` text,
 	`id_token` text,
 	`session_state` text,
-	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE cascade ON DELETE cascade
+	PRIMARY KEY(`provider`, `providerAccountId`),
+	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE cascade ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `Account_provider_providerAccountId_key` ON `account` (`provider`,`provider_account_id`);--> statement-breakpoint
+CREATE TABLE `authenticator` (
+	`credentialID` text NOT NULL,
+	`userId` text NOT NULL,
+	`providerAccountId` text NOT NULL,
+	`credentialPublicKey` text NOT NULL,
+	`counter` integer NOT NULL,
+	`credentialDeviceType` text NOT NULL,
+	`credentialBackedUp` integer NOT NULL,
+	`transports` text,
+	PRIMARY KEY(`userId`, `credentialID`),
+	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE cascade ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `authenticator_credentialID_unique` ON `authenticator` (`credentialID`);--> statement-breakpoint
 CREATE TABLE `comment` (
 	`id` text PRIMARY KEY NOT NULL,
 	`content` text NOT NULL,
@@ -41,14 +54,12 @@ CREATE TABLE `post` (
 );
 --> statement-breakpoint
 CREATE TABLE `session` (
-	`id` text PRIMARY KEY NOT NULL,
-	`session_token` text NOT NULL,
-	`user_id` text NOT NULL,
-	`expires` numeric NOT NULL,
-	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE cascade ON DELETE cascade
+	`sessionToken` text PRIMARY KEY NOT NULL,
+	`userId` text NOT NULL,
+	`expires` integer NOT NULL,
+	FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON UPDATE cascade ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `Session_sessionToken_key` ON `session` (`session_token`);--> statement-breakpoint
 CREATE TABLE `topic` (
 	`id` text PRIMARY KEY NOT NULL,
 	`slug` text NOT NULL,
@@ -62,16 +73,14 @@ CREATE TABLE `user` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text,
 	`email` text,
-	`email_verified` numeric,
+	`emailVerified` integer,
 	`image` text
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `User_email_key` ON `user` (`email`);--> statement-breakpoint
-CREATE TABLE `verification_token` (
+CREATE UNIQUE INDEX `user_email_unique` ON `user` (`email`);--> statement-breakpoint
+CREATE TABLE `verificationToken` (
 	`identifier` text NOT NULL,
 	`token` text NOT NULL,
-	`expires` numeric NOT NULL
+	`expires` integer NOT NULL,
+	PRIMARY KEY(`identifier`, `token`)
 );
---> statement-breakpoint
-CREATE UNIQUE INDEX `VerificationToken_identifier_token_key` ON `verification_token` (`identifier`,`token`);--> statement-breakpoint
-CREATE UNIQUE INDEX `VerificationToken_token_key` ON `verification_token` (`token`);

@@ -1,75 +1,87 @@
 import {
   sqliteTable,
   text,
-  numeric,
   integer,
-  uniqueIndex,
+  primaryKey,
 } from "drizzle-orm/sqlite-core";
 import { createId } from "@paralleldrive/cuid2";
+import type { AdapterAccountType } from "next-auth/adapters";
 
-export const account = sqliteTable(
+export const accounts = sqliteTable(
   "account",
   {
-    id: text().primaryKey().notNull().$defaultFn(() => createId()),
-    user_id: text()
+    userId: text("userId")
       .notNull()
-      .references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),
-    type: text().notNull(),
-    provider: text().notNull(),
-    provider_account_id: text().notNull(),
-    refresh_token: text(),
-    access_token: text(),
-    expires_at: integer(),
-    token_type: text(),
-    scope: text(),
-    id_token: text(),
-    session_state: text(),
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    type: text("type").$type<AdapterAccountType>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
   },
-  (table) => [
-    uniqueIndex("Account_provider_providerAccountId_key").on(
-      table.provider,
-      table.provider_account_id,
-    ),
+  (account) => [
+    primaryKey({
+      columns: [account.provider, account.providerAccountId],
+    }),
   ],
 );
 
-export const session = sqliteTable(
-  "session",
-  {
-    id: text().primaryKey().notNull().$defaultFn(() => createId()),
-    session_token: text().notNull(),
-    user_id: text()
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),
-    expires: numeric().notNull(),
-  },
-  (table) => [uniqueIndex("Session_sessionToken_key").on(table.session_token)],
-);
+export const sessions = sqliteTable("session", {
+  sessionToken: text().primaryKey(),
+  userId: text()
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+  expires: integer({ mode: "timestamp_ms" }).notNull(),
+});
 
-export const user = sqliteTable(
-  "user",
-  {
-    id: text().primaryKey().notNull().$defaultFn(() => createId()),
-    name: text(),
-    email: text(),
-    email_verified: numeric(),
-    image: text(),
-  },
-  (table) => [uniqueIndex("User_email_key").on(table.email)],
-);
+export const users = sqliteTable("user", {
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  name: text(),
+  email: text().unique(),
+  emailVerified: integer(),
+  image: text(),
+});
 
-export const verification_token = sqliteTable(
-  "verification_token",
+export const verification_tokens = sqliteTable(
+  "verificationToken",
   {
     identifier: text().notNull(),
     token: text().notNull(),
-    expires: numeric().notNull(),
+    expires: integer({ mode: "timestamp_ms" }).notNull(),
   },
-  (table) => [
-    uniqueIndex("VerificationToken_identifier_token_key").on(
-      table.identifier,
-      table.token,
-    ),
-    uniqueIndex("VerificationToken_token_key").on(table.token),
+  (verification_token) => [
+    primaryKey({
+      columns: [verification_token.identifier, verification_token.token],
+    }),
+  ],
+);
+
+export const authenticators = sqliteTable(
+  "authenticator",
+  {
+    credentialID: text().notNull().unique(),
+    userId: text()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    providerAccountId: text().notNull(),
+    credentialPublicKey: text().notNull(),
+    counter: integer().notNull(),
+    credentialDeviceType: text().notNull(),
+    credentialBackedUp: integer({
+      mode: "boolean",
+    }).notNull(),
+    transports: text("transports"),
+  },
+  (authenticator) => [
+    primaryKey({
+      columns: [authenticator.userId, authenticator.credentialID],
+    }),
   ],
 );

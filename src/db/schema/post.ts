@@ -8,7 +8,7 @@ import {
 import { sql } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 
-import { user } from "./user";
+import { users } from "./user";
 
 export const topic = sqliteTable(
   "topic",
@@ -30,7 +30,7 @@ export const post = sqliteTable("post", {
   content: text().notNull(),
   user_id: text()
     .notNull()
-    .references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
   topic_id: text()
     .notNull()
     .references(() => topic.id, { onDelete: "restrict", onUpdate: "cascade" }),
@@ -50,7 +50,7 @@ export const comment = sqliteTable(
       .references(() => post.id, { onDelete: "cascade", onUpdate: "cascade" }),
     user_id: text()
       .notNull()
-      .references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
     parent_id: text(),
     created_at: numeric()
       .default(sql`(CURRENT_TIMESTAMP)`)

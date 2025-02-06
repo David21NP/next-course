@@ -1,4 +1,4 @@
-export { account, user, session, verification_token } from "./user";
+export { accounts, users, sessions, verification_tokens, authenticators } from "./user";
 export { post, comment, topic } from "./post";
 export {
   account_relations,

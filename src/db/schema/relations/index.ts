@@ -1,25 +1,25 @@
 import { relations } from "drizzle-orm/relations";
-import { user, account, session } from "../user";
+import { users, accounts, sessions } from "../user";
 import { topic, post, comment } from "../post";
 
-export const account_relations = relations(account, ({ one }) => ({
-  user: one(user, {
-    fields: [account.user_id],
-    references: [user.id],
+export const account_relations = relations(accounts, ({ one }) => ({
+  user: one(users, {
+    fields: [accounts.userId],
+    references: [users.id],
   }),
 }));
 
-export const user_relations = relations(user, ({ many }) => ({
-  accounts: many(account),
-  sessions: many(session),
+export const user_relations = relations(users, ({ many }) => ({
+  accounts: many(accounts),
+  sessions: many(sessions),
   posts: many(post),
   comments: many(comment),
 }));
 
-export const session_relations = relations(session, ({ one }) => ({
-  user: one(user, {
-    fields: [session.user_id],
-    references: [user.id],
+export const session_relations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
   }),
 }));
 
@@ -28,9 +28,9 @@ export const post_relations = relations(post, ({ one, many }) => ({
     fields: [post.topic_id],
     references: [topic.id],
   }),
-  user: one(user, {
+  user: one(users, {
     fields: [post.user_id],
-    references: [user.id],
+    references: [users.id],
   }),
   comments: many(comment),
 }));
@@ -40,9 +40,9 @@ export const topic_relations = relations(topic, ({ many }) => ({
 }));
 
 export const comment_relations = relations(comment, ({ one, many }) => ({
-  user: one(user, {
+  user: one(users, {
     fields: [comment.user_id],
-    references: [user.id],
+    references: [users.id],
   }),
   post: one(post, {
     fields: [comment.post_id],

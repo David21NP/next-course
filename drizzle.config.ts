@@ -2,7 +2,7 @@ import { defineConfig } from "drizzle-kit";
 import process from "node:process";
 
 // Load the environment variables from the .env file
-process.loadEnvFile();
+process.loadEnvFile(".env.local");
 
 export default defineConfig({
   out: "./drizzle",
