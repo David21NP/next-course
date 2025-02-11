@@ -11,16 +11,20 @@ import { startTransition, useActionState, useCallback, useState } from "react";
 import * as actions from "@/actions";
 
 const initialActionState = {
-  name: [],
-  description: [],
+  title: [],
+  content: [],
   server: [],
 };
 
-export default function CreateTopicForm() {
+interface Props {
+  slug: string;
+}
+
+export default function CreatePostForm({ slug }: Props) {
   const [open, setOpen] = useState(false);
 
   const [formState, formAction, pending] = useActionState(
-    actions.createTopic,
+    actions.createPost,
     initialActionState,
   );
 
@@ -28,6 +32,7 @@ export default function CreateTopicForm() {
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       const formData = new FormData(event.currentTarget);
+      formData.set("slug", slug);
       startTransition(() => {
         formAction(formData);
       });
@@ -41,7 +46,7 @@ export default function CreateTopicForm() {
         className="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         onClick={() => setOpen(true)}
       >
-        New Topic
+        New Post
       </button>
       <Dialog open={open} onClose={setOpen} className="relative z-10">
         <DialogBackdrop
@@ -73,7 +78,7 @@ export default function CreateTopicForm() {
                     as="h3"
                     className="text-xl font-semibold text-gray-100"
                   >
-                    Create a topic
+                    Create a post
                   </DialogTitle>
                   <div className="sm:mx-auto sm:w-full sm:max-w-sm text-left flex flex-col gap-2 mt-4">
                     {formState.server.length > 0 && (
@@ -87,24 +92,24 @@ export default function CreateTopicForm() {
                     )}
                     <div>
                       <label
-                        htmlFor="name"
+                        htmlFor="title"
                         className="block text-sm/6 font-medium text-white"
                       >
-                        Name
+                        Title
                       </label>
                       <div className="my-2 flex flex-col gap-2">
                         <input
-                          id="name"
-                          name="name"
+                          id="title"
+                          name="title"
                           required
                           minLength={3}
                           autoComplete="off"
                           className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
                         />
-                        {formState.name.length > 0 && (
+                        {formState.title.length > 0 && (
                           <div className="px-4 py-2 bg-red-700/30 text-red-50 text-sm rounded-md outline outline-1 outline-red-700">
                             <ul className="list-disc pl-5">
-                              {formState.name.map((error, indx) => (
+                              {formState.title.map((error, indx) => (
                                 <li key={indx}>{error}</li>
                               ))}
                             </ul>
@@ -115,23 +120,23 @@ export default function CreateTopicForm() {
 
                     <div>
                       <label
-                        htmlFor="description"
+                        htmlFor="content"
                         className="block text-sm/6 font-medium text-gray-100"
                       >
-                        Description
+                        Content
                       </label>
                       <div className="my-2 flex flex-col gap-2">
                         <textarea
-                          id="description"
-                          name="description"
+                          id="content"
+                          name="content"
                           rows={4}
                           minLength={10}
                           className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-gray-100 outline outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                         />
-                        {formState.description.length > 0 && (
+                        {formState.content.length > 0 && (
                           <div className="px-4 py-2 bg-red-700/30 text-red-50 text-sm rounded-md outline outline-1 outline-red-700">
                             <ul className="list-disc pl-5">
-                              {formState.description.map((error, indx) => (
+                              {formState.content.map((error, indx) => (
                                 <li key={indx}>{error}</li>
                               ))}
                             </ul>

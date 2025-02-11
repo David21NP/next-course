@@ -13,19 +13,27 @@ import { users } from "./user";
 export const topic = sqliteTable(
   "topic",
   {
-    id: text().primaryKey().notNull().$defaultFn(() => createId()),
+    id: text()
+      .primaryKey()
+      .notNull()
+      .$defaultFn(() => createId()),
     slug: text().notNull(),
     description: text().notNull(),
     created_at: numeric()
       .default(sql`(CURRENT_TIMESTAMP)`)
       .notNull(),
-    updated_at: numeric().notNull(),
+    updated_at: numeric()
+      .default(sql`(CURRENT_TIMESTAMP)`)
+      .notNull(),
   },
   (table) => [uniqueIndex("Topic_slug_key").on(table.slug)],
 );
 
 export const post = sqliteTable("post", {
-  id: text().primaryKey().notNull().$defaultFn(() => createId()),
+  id: text()
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => createId()),
   title: text().notNull(),
   content: text().notNull(),
   user_id: text()
@@ -37,13 +45,18 @@ export const post = sqliteTable("post", {
   created_at: numeric()
     .default(sql`(CURRENT_TIMESTAMP)`)
     .notNull(),
-  updated_at: numeric().notNull(),
+  updated_at: numeric()
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull(),
 });
 
 export const comment = sqliteTable(
   "comment",
   {
-    id: text().primaryKey().notNull().$defaultFn(() => createId()),
+    id: text()
+      .primaryKey()
+      .notNull()
+      .$defaultFn(() => createId()),
     content: text().notNull(),
     post_id: text()
       .notNull()
@@ -55,7 +68,9 @@ export const comment = sqliteTable(
     created_at: numeric()
       .default(sql`(CURRENT_TIMESTAMP)`)
       .notNull(),
-    updated_at: numeric().notNull(),
+    updated_at: numeric()
+      .default(sql`(CURRENT_TIMESTAMP)`)
+      .notNull(),
   },
   (table) => [
     foreignKey({

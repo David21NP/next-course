@@ -4,7 +4,7 @@ const paths = {
   topicView: (topic: string) => `/topics/${topic}`,
   postList: (topic: string) => `/topics/${topic}/posts`,
   postCreate: (topic: string) => `/topics/${topic}/posts/new`,
-  postView: (topic: string, post_id: number) =>
+  postView: (topic: string, post_id: string) =>
     `/topics/${topic}/posts/${post_id}`,
 };
 

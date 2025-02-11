@@ -8,6 +8,13 @@
       "when": 1738859554678,
       "tag": "0000_init_db",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1739295064725,
+      "tag": "0001_typical_talkback",
+      "breakpoints": true
     }
   ]
 }
