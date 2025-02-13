@@ -27,8 +27,6 @@ export async function createPost(
   const slug = formData.get("slug");
   const content = formData.get("content");
 
-  console.log(slug)
-
   if (typeof slug !== "string") {
     return {
       title: [],
@@ -74,14 +72,14 @@ export async function createPost(
       where: (topic, { eq }) => eq(topic.slug, slug),
     });
     if (!topic) {
-      throw new Error("Topic not found id db.");
+      throw new Error("Topic not found in db.");
     }
     const user = await db.query.users.findFirst({
       columns: { id: true },
       where: (user, { eq }) => eq(user.email, session.user?.email ?? ""),
     });
     if (!user) {
-      throw new Error("User not found id db.");
+      throw new Error("User not found in db.");
     }
     const postCreated = await db
       .insert(post)

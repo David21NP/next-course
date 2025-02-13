@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useActionState, startTransition, useCallback, useMemo } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import * as actions from "@/actions";
+import Link from "next/link";
 
 const userNavigation = [
   { name: "Your Profile", href: "#" },
@@ -80,12 +81,12 @@ export default function ProfileDropdown() {
         >
           {userNavigation.map((item) => (
             <MenuItem key={item.name}>
-              <a
+              <Link
                 href={item.href}
                 className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
               >
                 {item.name}
-              </a>
+              </Link>
             </MenuItem>
           ))}
           <MenuItem>

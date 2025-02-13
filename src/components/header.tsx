@@ -10,18 +10,9 @@ import {
 } from "@heroicons/react/24/outline";
 import ProfileDropdown from "@/components/profile_dropdown";
 import ProfilePanel from "@/components/profile_panel";
-
-const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Team", href: "#", current: false },
-  { name: "Projects", href: "#", current: false },
-  { name: "Calendar", href: "#", current: false },
-  { name: "Reports", href: "#", current: false },
-];
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
+import Link from "next/link";
+import paths from "@/paths";
+import Breadcrumbs from "@/components/breadcrumbs";
 
 export default function Header() {
   return (
@@ -32,16 +23,18 @@ export default function Header() {
             <div className="flex h-16 items-center justify-between px-4 sm:px-0">
               <div className="flex items-center">
                 <div className="shrink-0">
-                  <img
-                    alt="Your Company"
-                    src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-                    className="size-8"
-                  />
+                  <Link href={paths.home()}>
+                    <img
+                      alt="Your Company"
+                      src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
+                      className="size-8"
+                    />
+                  </Link>
                 </div>
-                <div className="hidden md:block">
+                {/*<div className="hidden md:block">
                   <div className="ml-10 flex items-baseline space-x-4">
                     {navigation.map((item) => (
-                      <a
+                      <Link
                         key={item.name}
                         href={item.href}
                         aria-current={item.current ? "page" : undefined}
@@ -53,10 +46,10 @@ export default function Header() {
                         )}
                       >
                         {item.name}
-                      </a>
+                      </Link>
                     ))}
                   </div>
-                </div>
+                </div>*/}
               </div>
               <div className="flex flex-1 justify-center px-2 lg:ml-6 lg:justify-end">
                 <div className="grid w-full max-w-lg grid-cols-1 lg:max-w-xs">
@@ -100,7 +93,7 @@ export default function Header() {
 
         <DisclosurePanel className="border-b border-gray-700 md:hidden">
           <div className="space-y-1 px-2 py-3 sm:px-3">
-            {navigation.map((item) => (
+            {/*navigation.map((item) => (
               <DisclosureButton
                 key={item.name}
                 as="a"
@@ -115,11 +108,12 @@ export default function Header() {
               >
                 {item.name}
               </DisclosureButton>
-            ))}
+            ))*/}
           </div>
           <ProfilePanel />
         </DisclosurePanel>
       </Disclosure>
+      <Breadcrumbs />
     </div>
   );
 }
