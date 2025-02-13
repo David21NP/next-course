@@ -21,8 +21,6 @@ export async function createPost(
     };
   }
 
-  await new Promise((r) => setTimeout(r, 4000));
-
   const title = formData.get("title");
   const slug = formData.get("slug");
   const content = formData.get("content");
@@ -66,7 +64,6 @@ export async function createPost(
 
   let postId;
   try {
-    // throw new Error("No dejar pasar");
     const topic = await db.query.topic.findFirst({
       columns: { slug: true, id: true },
       where: (topic, { eq }) => eq(topic.slug, slug),

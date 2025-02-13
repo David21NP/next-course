@@ -19,8 +19,6 @@ export async function createComment(
     };
   }
 
-  // await new Promise((r) => setTimeout(r, 4000));
-
   const comment_content = formData.get("comment");
   const post_id = formData.get("post_id");
   let parent_id: FormDataEntryValue | null | undefined =
@@ -63,7 +61,6 @@ export async function createComment(
 
   let slug = "";
   try {
-    // throw new Error("No dejar pasar");
     const post = await db.query.post.findFirst({
       columns: { id: true, topic_id: true },
       where: (post, { eq }) => eq(post.id, post_id),

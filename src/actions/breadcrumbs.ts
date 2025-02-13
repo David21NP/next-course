@@ -26,7 +26,6 @@ export async function getBradcrumbsNames(
   const pages: Results[] = [];
 
   try {
-    // throw new Error("No dejar pasar");
     let route = routes.shift();
     if (route) {
       pages.push({ name: route, href: paths.topicView(route) });

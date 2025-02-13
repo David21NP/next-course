@@ -21,8 +21,6 @@ export async function createTopic(
     };
   }
 
-  await new Promise((r) => setTimeout(r, 4000));
-
   const name = formData.get("name");
   const description = formData.get("description");
 
@@ -52,7 +50,6 @@ export async function createTopic(
   const name_as_slug = name.replace(/\s/g, "-").toLowerCase();
 
   try {
-    // throw new Error("No dejar pasar");
     await db.insert(topic).values({ slug: name_as_slug, description });
   } catch (err: unknown) {
     if (err instanceof Error) {

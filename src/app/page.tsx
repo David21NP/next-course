@@ -1,6 +1,8 @@
 import CreateTopicForm from "@/components/topics/create-form";
 import { db } from "@/db";
+// import { comment } from "@/db/schema";
 import paths from "@/paths";
+// import { eq } from "drizzle-orm";
 import Link from "next/link";
 
 export default async function Home() {
@@ -13,7 +15,12 @@ export default async function Home() {
     limit: 10,
     // orderBy: (posts, { desc }) => [
     //   desc(db.$count(comment, eq(comment.post_id, posts.id))),
+    //   // desc(posts.co),
     // ],
+  });
+  posts.forEach((post) => {
+    console.log(post.title);
+    console.log(post.comments.length);
   });
   const topic = await db.query.topic.findMany({
     columns: {
